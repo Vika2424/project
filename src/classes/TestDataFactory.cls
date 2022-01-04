@@ -24,4 +24,13 @@ public class TestDataFactory {
         insert events;
         return events;
     }
+
+    public static List<OrderItem> insertOrderItems(List<PricebookEntry> pricebookEntries, Order order, Integer quantity) {
+        List<OrderItem> orderItems = new List<OrderItem>();
+        for (PricebookEntry pricebookEntry : pricebookEntries) {
+            orderItems.add(new OrderItem(UnitPrice = 200, PricebookEntryId = pricebookEntry.Id, OrderId = order.Id, Quantity = quantity));
+        }
+        insert orderItems;
+        return orderItems;
+    }
 }
