@@ -34,10 +34,10 @@ public with sharing class OrderItemTriggerHandler {
                 for (OrderItem newRecord : newRecords) {
                     if (newRecord.Quantity != oldMap.get(newRecord.Id).Quantity) {
                         amount = mapProducts.get(newRecord.Product2Id).Total_Amount__c;
-                        remainingQuantity = amount - newRecord.Quantity;
+                        remainingQuantity = amount - (newRecord.Quantity - oldMap.get(newRecord.Id).Quantity);
 
                         if (remainingQuantity >= 0) {
-                            mapProducts.get(newRecord.Product2Id).Total_Amount__c -= newRecord.Quantity - oldMap.get(newRecord.Id).Quantity;
+                            mapProducts.get(newRecord.Product2Id).Total_Amount__c = remainingQuantity;
                         } else {
                             error = generateError(amount.intValue());
                             newRecord.addError(error);

@@ -211,7 +211,7 @@ private class OrderItemTriggerTest {
 
         for (Integer i = 0; i < pricebookEntries.size(); i++) {
             System.assertEquals(1, products[i].Total_Amount__c);
-            orderItems[i].Quantity = 3;
+            orderItems[i].Quantity = 33;
         }
         Test.startTest();
         Database.SaveResult[] results = Database.update(orderItems, false);
@@ -234,7 +234,7 @@ private class OrderItemTriggerTest {
 
         for (Integer i = 0; i < pricebookEntries.size(); i++) {
             System.assertEquals(0, products[i].Total_Amount__c);
-            orderItems[i].Quantity = 3;
+            orderItems[i].Quantity = 33;
         }
         Test.startTest();
         Database.SaveResult[] results = Database.update(orderItems, false);
