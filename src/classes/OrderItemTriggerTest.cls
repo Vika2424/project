@@ -4,6 +4,8 @@
 
 @IsTest
 private class OrderItemTriggerTest {
+    private static final String errorFor0 = 'This product is out of stock';
+    private static final String errorFor1 = 'There is only one item in stock';
 
     @TestSetup
     static void setup() {
@@ -47,13 +49,12 @@ private class OrderItemTriggerTest {
         }
 
         Test.startTest();
-        Database.SaveResult[] results = Database.insert(orderItems, false);
+        insert orderItems;
         Test.stopTest();
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
-        for (Integer i = 0; i < results.size(); i++) {
-            System.assert(results[i].isSuccess());
-            System.assertEquals(25, product2s[i].Total_Amount__c);
+        for (Product2 product2 : product2s) {
+            System.assertEquals(25, product2.Total_Amount__c);
         }
     }
 
@@ -73,7 +74,6 @@ private class OrderItemTriggerTest {
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
         for (Integer i = 0; i < results.size(); i++) {
-            System.assert(!results[i].isSuccess());
             System.assertEquals('There are only 30 in stock', results[i].getErrors()[0].message);
             System.assertEquals(30, product2s[i].Total_Amount__c);
         }
@@ -94,8 +94,7 @@ private class OrderItemTriggerTest {
         Test.stopTest();
 
         Product2 productResult = [SELECT Id, Total_Amount__c FROM Product2 WHERE Id = :product.Id];
-        System.assert(!results[0].isSuccess());
-        System.assertEquals('There is only one item in stock', results[0].getErrors()[0].message);
+        System.assertEquals(errorFor1, results[0].getErrors()[0].message);
         System.assertEquals(1, productResult.Total_Amount__c);
 
     }
@@ -115,8 +114,7 @@ private class OrderItemTriggerTest {
         Test.stopTest();
 
         Product2 productResult = [SELECT Id, Total_Amount__c FROM Product2 WHERE Id = :product.Id];
-        System.assert(!results[0].isSuccess());
-        System.assertEquals('This product is out of stock', results[0].getErrors()[0].message);
+        System.assertEquals(errorFor0, results[0].getErrors()[0].message);
         System.assertEquals(0, productResult.Total_Amount__c);
     }
 
@@ -147,13 +145,12 @@ private class OrderItemTriggerTest {
             orderItems[i].Quantity = 1;
         }
         Test.startTest();
-        Database.SaveResult[] results = Database.update(orderItems, false);
+        update orderItems;
         Test.stopTest();
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
-        for (Integer i = 0; i < results.size(); i++) {
-            System.assert(results[i].isSuccess());
-            System.assertEquals(29, product2s[i].Total_Amount__c);
+        for (Product2 product2 : product2s) {
+            System.assertEquals(29, product2.Total_Amount__c);
         }
     }
 
@@ -169,13 +166,12 @@ private class OrderItemTriggerTest {
             orderItems[i].Quantity = 7;
         }
         Test.startTest();
-        Database.SaveResult[] results = Database.update(orderItems, false);
+        update orderItems;
         Test.stopTest();
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
-        for (Integer i = 0; i < results.size(); i++) {
-            System.assert(results[i].isSuccess());
-            System.assertEquals(23, product2s[i].Total_Amount__c);
+        for (Product2 product2 : product2s) {
+            System.assertEquals(23, product2.Total_Amount__c);
         }
     }
 
@@ -196,7 +192,6 @@ private class OrderItemTriggerTest {
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
         for (Integer i = 0; i < results.size(); i++) {
-            System.assert(!results[i].isSuccess());
             System.assertEquals('There are only 27 in stock', results[i].getErrors()[0].message);
             System.assertEquals(27, product2s[i].Total_Amount__c);
         }
@@ -219,8 +214,7 @@ private class OrderItemTriggerTest {
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
         for (Integer i = 0; i < results.size(); i++) {
-            System.assert(!results[i].isSuccess());
-            System.assertEquals('There is only one item in stock', results[i].getErrors()[0].message);
+            System.assertEquals(errorFor1, results[i].getErrors()[0].message);
             System.assertEquals(1, product2s[i].Total_Amount__c);
         }
     }
@@ -242,8 +236,7 @@ private class OrderItemTriggerTest {
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
         for (Integer i = 0; i < results.size(); i++) {
-            System.assert(!results[i].isSuccess());
-            System.assertEquals('This product is out of stock', results[i].getErrors()[0].message);
+            System.assertEquals(errorFor0, results[i].getErrors()[0].message);
             System.assertEquals(0, product2s[i].Total_Amount__c);
         }
     }
@@ -255,13 +248,12 @@ private class OrderItemTriggerTest {
         List<OrderItem> orderItems = TestDataFactory.insertOrderItems(pricebookEntries, order, 5);
 
         Test.startTest();
-        Database.DeleteResult[] results = Database.delete(orderItems, false);
+        delete orderItems;
         Test.stopTest();
 
         List<Product2> product2s = [SELECT Id, Total_Amount__c FROM Product2];
-        for (Integer i = 0; i < results.size(); i++) {
-            System.assert(results[i].isSuccess());
-            System.assertEquals(30, product2s[i].Total_Amount__c);
+        for (Product2 product2 : product2s) {
+            System.assertEquals(30, product2.Total_Amount__c);
         }
     }
 }

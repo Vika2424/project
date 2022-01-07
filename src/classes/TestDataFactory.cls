@@ -12,8 +12,10 @@ public class TestDataFactory {
         return events;
     }
 
-    public static void insertEvent(Id owner, Datetime start, Integer duration) {
-        insert new Event(OwnerId = owner, StartDateTime = start, EndDateTime = start.addMinutes(duration));
+    public static Event insertEvent(Id owner, Datetime start, Integer duration) {
+        Event event = new Event(OwnerId = owner, StartDateTime = start, EndDateTime = start.addMinutes(duration));
+        insert event;
+        return event;
     }
 
     public static List<Event> insertEvents(Integer num, Id owner, Integer interval, Datetime start, Integer duration) {
