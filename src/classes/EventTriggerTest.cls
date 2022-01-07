@@ -16,10 +16,8 @@ private class EventTriggerTest {
         Test.stopTest();
 
         List<Event> events2 = [SELECT Id FROM Event];
+        System.debug(events2);
         System.assert(results[0].isSuccess());
-        for (Integer i = 1; i < results.size(); i++) {
-            System.assert(!results[i].isSuccess());
-        }
         System.assertEquals(1, events2.size());
     }
 
@@ -29,13 +27,10 @@ private class EventTriggerTest {
         List<Event> events = TestDataFactory.getEvents(8, UserInfo.getUserId(), 60, Datetime.now(), 60);
 
         Test.startTest();
-        Database.SaveResult[] results = Database.insert(events, false);
+        insert events;
         Test.stopTest();
 
         List<Event> events2 = [SELECT Id FROM Event];
-        for (Integer i = 0; i < results.size(); i++) {
-            System.assert(results[i].isSuccess());
-        }
         System.assertEquals(8, events2.size());
     }
 
@@ -102,20 +97,21 @@ private class EventTriggerTest {
     @IsTest
     static void testUpdateSingleEvent() {
         Datetime currentTime = Datetime.now();
-        TestDataFactory.insertEvent(UserInfo.getUserId(), currentTime, 60);
-        Event event = [SELECT Id, StartDateTime, EndDateTime FROM Event];
+        Event event = TestDataFactory.insertEvent(UserInfo.getUserId(), currentTime, 60);
 
-        event.StartDateTime.addMinutes(20);
-        event.EndDateTime.addMinutes(20);
+        event.StartDateTime = event.StartDateTime.addMinutes(20);
+        event.EndDateTime = event.EndDateTime.addMinutes(20);
+
 
         Test.startTest();
-        Database.update(event, false);
+        update event;
         Test.stopTest();
+
 
         List<Event> events = [SELECT Id, StartDateTime, EndDateTime FROM Event];
         System.assertEquals(1, events.size());
-        System.equals(currentTime.addMinutes(20).minute(), events[0].StartDateTime.minute());
-        System.equals(currentTime.addMinutes(80).minute(), events[0].EndDateTime.minute());
+        System.assertEquals(currentTime.addMinutes(20).minute(), events[0].StartDateTime.minute());
+        System.assertEquals(currentTime.addMinutes(80).minute(), events[0].EndDateTime.minute());
     }
 
     @IsTest
