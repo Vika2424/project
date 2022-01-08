@@ -25,7 +25,7 @@ public with sharing class EventTriggerHandler {
             users.add(record.OwnerId);
         }
         Map<Id, List<Event>> mapEvents = new Map<Id, List<Event>>();
-        if (users.size() > 5) {
+        if (users.size() > 3) {
             List<Event> existingEvents = [SELECT Id, StartDateTime, EndDateTime, OwnerId FROM Event WHERE OwnerId IN :users];
             for (Id user : users) {
                 mapEvents.put(user, new List<Event>());
