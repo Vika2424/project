@@ -5,6 +5,22 @@
 @IsTest
 private class EventTriggerTest {
 
+    @TestSetup
+    private static void setup() {
+        Profile p = [SELECT Id FROM Profile WHERE Name='System Administrator'];
+        List<User> uu = new List<User>();
+        String uid;
+
+        for (Integer i = 0; i < 6; i++) {
+            uid = 'standardUser' + i;
+            User u = new User(Alias = 'std' + i, Email= uid + '@test.com',
+                    EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+                    LocaleSidKey='en_US', ProfileId = p.Id,
+                    TimeZoneSidKey='America/New_York', Username = uid + '@test.com' + i);
+            uu.add(u);
+        }
+        insert(uu);
+    }
 
     @IsTest
     static void testInsertEventsSameTime() {
@@ -134,5 +150,50 @@ private class EventTriggerTest {
         Event event = [SELECT Id, StartDateTime, EndDateTime FROM Event WHERE Id = :eventId];
         System.assertEquals(currentTime, event.StartDateTime);
         System.assertEquals(currentTime.addMinutes(60), event.EndDateTime);
+    }
+
+    @IsTest
+    static void testInsertForDifferentUsers() {
+        List<User> users = [SELECT Id FROM User WHERE CreatedDate = TODAY];
+        List<Event> events = TestDataFactory.getEventsForDifferentUsers(users, Datetime.now(), 60);
+
+        Test.startTest();
+        insert events;
+        Test.stopTest();
+
+        List<Event> resultEvents = [SELECT Id FROM Event];
+        System.assertEquals(6, resultEvents.size());
+
+    }
+
+    @IsTest
+    static void testInsertFor3DifferentUsers() {
+        List<User> users = [SELECT Id FROM User WHERE CreatedDate = TODAY LIMIT 3];
+        List<Event> events = TestDataFactory.getEventsForDifferentUsers(users, Datetime.now(), 60);
+
+        Test.startTest();
+        insert events;
+        Test.stopTest();
+
+        List<Event> resultEvents = [SELECT Id FROM Event];
+        System.assertEquals(3, resultEvents.size());
+
+    }
+
+    @IsTest
+    static void testInsertForDifferentUsersWithCollision() {
+        List<User> users = [SELECT Id FROM User WHERE CreatedDate = TODAY];
+        List<Event> events = TestDataFactory.getEventsForDifferentUsers(users, Datetime.now(), 60);
+        List<Event> anotherEvents = TestDataFactory.getEventsForDifferentUsers(users, Datetime.now().addMinutes(20), 60);
+
+
+        Test.startTest();
+        insert events;
+        Database.insert(anotherEvents, false);
+        Test.stopTest();
+
+        List<Event> resultEvents = [SELECT Id FROM Event];
+        System.assertEquals(6, resultEvents.size());
+
     }
 }
