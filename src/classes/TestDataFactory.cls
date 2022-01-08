@@ -35,4 +35,12 @@ public class TestDataFactory {
         insert orderItems;
         return orderItems;
     }
+
+    public static List<Event> getEventsForDifferentUsers(List<User> users, Datetime start, Integer duration) {
+        List<Event> events = new List<Event>();
+        for (User user : users) {
+            events.add(new Event(OwnerId = user.Id, StartDateTime = start, EndDateTime = start.addMinutes(duration)));
+        }
+        return events;
+    }
 }
