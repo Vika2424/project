@@ -24,16 +24,18 @@ private class EventTriggerTest {
 
     @IsTest
     static void testInsertEventsSameTime() {
-
-        List<Event> events = TestDataFactory.getEvents(10, UserInfo.getUserId(), 0, Datetime.now(), 60);
+        Event event = TestDataFactory.insertEvent(UserInfo.getUserId(), Datetime.now(), 60);
+        List<Event> events = TestDataFactory.getEvents(1, UserInfo.getUserId(), 0, Datetime.now(), 60);
 
         Test.startTest();
         Database.SaveResult[] results = Database.insert(events, false);
         Test.stopTest();
 
         List<Event> events2 = [SELECT Id FROM Event];
-        System.debug(events2);
-        System.assert(results[0].isSuccess());
+
+        for (Database.SaveResult saveResult : results) {
+            System.assert(!saveResult.isSuccess());
+        }
         System.assertEquals(1, events2.size());
     }
 
